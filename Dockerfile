@@ -6,12 +6,7 @@ ENV GOPATH      /root/go
 ENV PATH        $GOPATH/bin:$PATH
 ENV IRIS_PATH   $GOPATH/src/github.com/irisnet
 
-
-
 COPY . $REPO_PATH
-WORKDIR $REPO_PATH
-
-
 
 RUN mkdir -p $IRIS_PATH &&\
     apk add --no-cache $PACKAGES python3-dev &&\
@@ -21,6 +16,7 @@ RUN mkdir -p $IRIS_PATH &&\
     cd irishub && git checkout -b develop origin/develop &&\
     dep ensure -vendor-only &&\
     make build_linux &&\
+    mv build/* /usr/local/bin/ &&\
     cd $REPO_PATH &&\
     pip3 install -r requirements.txt &&\
     apk del $PACKAGES &&\
