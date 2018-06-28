@@ -23,6 +23,6 @@ RUN mkdir -p $IRIS_PATH &&\
     cd $REPO_PATH &&\
     pip3 install -r requirements.txt &&\
     apk del $PACKAGES &&\
-    rm -fr $GOPATH/src/
+#    rm -fr $GOPATH/src/
 
 CMD ["python3"]
