@@ -1,12 +1,15 @@
 FROM alpine:edge
 
-ENV REPO_PATH  /faucet
-ENV PACKAGES go make git libc-dev bash
+ENV REPO_PATH   /faucet
+ENV PACKAGES    go make git libc-dev bash
+ENV IRIS_PATH   $GOPATH/src/github.com/irisnet
+ENV PATH        $GOPATH/bin:$PATH
 
 
 COPY . $REPO_PATH
 WORKDIR $REPO_PATH
-ENV IRIS_PATH $GOPATH/src/github.com/irisnet
+
+
 
 RUN mkdir -p $IRIS_PATH &&\
     apk add --no-cache $PACKAGES python3-dev &&\
