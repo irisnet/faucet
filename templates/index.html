@@ -4,6 +4,9 @@
     body {
         padding-top: 200px;
     }
+    .sm-txt {
+        font-size: 20px;
+    }
 </style>
 <head>
     <meta charset="UTF-8">
@@ -47,8 +50,8 @@
         window.onload = function () {
             var ic = new smartCaptcha({
                 renderTo: '#sc',
-                // width: 300,
-                // height: 42,
+                width: 670,
+                height: 94,
                 default_txt: '点击按钮开始智能验证',
                 success_txt: '验证成功',
                 fail_txt: '验证失败，请在此点击按钮刷新',
@@ -69,9 +72,9 @@
             }
             $("#applyForm").ajaxSubmit(function (result) {
                 if (result.err_code) {
-                    alert(result.err_msg)
+                    document.getElementById("err_msg").innerHTML = "* "+ result.err_msg;
                 } else {
-                    alert("apply successfully")
+                    document.getElementById("err_msg").innerHTML = "apply successfully";
                 }
             });
             return false;
@@ -82,20 +85,22 @@
 <body>
 <script src="//g.alicdn.com/sd/smartCaptcha/0.0.1/index.js"></script>
 <div class="container" style="width: 50%">
+    <h2>Irisnet Testnet Faucet</h2>
+    <p>Use this faucet to get tokens for the latest Irisnet testnet.
+        Please don't abuse this service—the number of available tokens is limited.</p>
     <form id="applyForm" method="post" action="/apply" onsubmit="return apply()">
         <input type="text" class="form-control" id="token" name="token" placeholder="" hidden>
         <input type="text" class="form-control" id="session_id" name="session_id" placeholder="" hidden>
         <input type="text" class="form-control" id="sig" name="sig" placeholder="" hidden>
         <fieldset class="form-group">
-            <label for="address">address</label>
-            <input type="text" class="form-control" id="address" name="address" required>
-            <small class="text-muted">Input your address to get some token</small>
+            <input type="text" class="form-control" id="address" name="address" placeholder="Testnet address" required>
+            <small id="err_msg" style="color: red"></small>
         </fieldset>
         <fieldset class="form-group">
-            <div id="sc" style="margin: 0 0 0 0">
+            <div id="sc" style="margin: 0 0 0 0; font-size: 20px" >
             </div>
         </fieldset>
-        <button id="submit" type="submit" class="btn btn-primary" disabled>Submit</button>
+        <button id="submit" type="submit" class="btn btn-primary" disabled>Send me Irisnet tokens</button>
     </form>
 </div>
 </body>

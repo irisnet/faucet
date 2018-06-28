@@ -16,7 +16,7 @@ ACCESS_KEY = env_dist.get('ACCESS_KEY', '')
 ACCESS_SECRET = env_dist.get('ACCESS_SECRET', '')
 APP_KEY = env_dist.get('APP_KEY', '')
 SCENE = env_dist.get('SCENE', 'ic_activity')
-NAME = env_dist.get('SCENE', '')
+NAME = env_dist.get('NAME', '')
 CHAIN_ID = env_dist.get('CHAIN_ID', 'fuxi-develop')
 AMOUNT = env_dist.get('AMOUNT', '10iris')
 PASSWORD = env_dist.get('PASSWORD', '1234567890')
@@ -65,7 +65,11 @@ def verify(token, session_id, sig, ip):
     # 必填参数：后端填写
     ali_request.set_RemoteIp(ip)
 
-    result = clt.do_action_with_exception(ali_request)  # 返回code 100表示验签通过，900表示验签失败
+    try:
+        result = clt.do_action_with_exception(ali_request)  # 返回code 100表示验签通过，900表示验签失败
+    except Exception:
+        return False
+
     print(result)
     s = bytes.decode(result)
     j = json.loads(s)
