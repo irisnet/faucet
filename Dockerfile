@@ -17,9 +17,9 @@ RUN mkdir -p $IRIS_PATH &&\
     go get github.com/golang/dep/cmd/dep &&\
     cd $IRIS_PATH &&\
     git clone https://github.com/irisnet/irishub.git &&\
-    cd irishub && git checkout -b develop &&\
-#    dep ensure -vendor-only &&\
-#    make build_linux &&\
+    cd irishub && git checkout -b develop origin/develop &&\
+    dep ensure -vendor-only &&\
+    make build_linux &&\
     cd $REPO_PATH &&\
     pip3 install -r requirements.txt &&\
     apk del $PACKAGES &&\
