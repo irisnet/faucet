@@ -19,6 +19,7 @@ RUN mkdir -p $IRIS_PATH &&\
     cd irishub && git checkout -b develop &&\
 #    dep ensure -vendor-only &&\
 #    make build_linux &&\
+    cd $REPO_PATH &&\
     pip3 install -r requirements.txt &&\
     apk del $PACKAGES &&\
     rm -fr $GOPATH/src/
