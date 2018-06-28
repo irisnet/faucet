@@ -17,8 +17,8 @@ RUN mkdir -p $IRIS_PATH &&\
     cd $IRIS_PATH &&\
     git clone https://github.com/irisnet/irishub.git &&\
     cd irishub && git checkout -b develop &&\
-    dep ensure -vendor-only &&\
-    make build_linux &&\
+#    dep ensure -vendor-only &&\
+#    make build_linux &&\
     pip3 install -r requirements.txt &&\
     apk del $PACKAGES &&\
     rm -fr $GOPATH/src/
