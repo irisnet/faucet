@@ -4,9 +4,6 @@
     body {
         padding-top: 200px;
     }
-    .sm-txt {
-        font-size: 20px;
-    }
 </style>
 <head>
     <meta charset="UTF-8">
@@ -50,9 +47,9 @@
         window.onload = function () {
             var ic = new smartCaptcha({
                 renderTo: '#sc',
-                width: 670,
-                height: 94,
-                default_txt: '点击按钮开始智能验证',
+                // width: 300,
+                // height: 42,
+                default_txt: '<h1>点击按钮开始智能验证</h1>',
                 success_txt: '验证成功',
                 fail_txt: '验证失败，请在此点击按钮刷新',
                 scaning_txt: '智能检测中',
@@ -97,7 +94,7 @@
             <small id="err_msg" style="color: red"></small>
         </fieldset>
         <fieldset class="form-group">
-            <div id="sc" style="margin: 0 0 0 0; font-size: 20px" >
+            <div id="sc" style="margin: 0 0 0 0">
             </div>
         </fieldset>
         <button id="submit" type="submit" class="btn btn-primary" disabled>Send me Irisnet tokens</button>
