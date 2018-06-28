@@ -22,7 +22,7 @@ RUN mkdir -p $IRIS_PATH &&\
 #    make build_linux &&\
     cd $REPO_PATH &&\
     pip3 install -r requirements.txt &&\
-    apk del $PACKAGES &&\
+    apk del $PACKAGES
 #    rm -fr $GOPATH/src/
 
 CMD ["python3"]
