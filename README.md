@@ -34,6 +34,15 @@ python3 main.py
 ```
 
 # Docker
+```
 docker build -t faucet ./
-docker run -p 4000:4000 -e "" faucet
+docker run -p 4000:4000 -e ${ENV Variables} faucet
+```
+进入docker container或通过docker exec -it执行如下命令新建或恢复faucet账户，
+```
+iriscli keys add faucet (--recover)
+```
+并给faucet账号转入一定数量的token。
+
+
 
