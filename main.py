@@ -1,6 +1,6 @@
 import json
 import os
-from subprocess import Popen, PIPE, STDOUT, run
+from subprocess import PIPE, run
 
 from aliyunsdkcore import client
 from aliyunsdkafs.request.v20180112 import AuthenticateSigRequest
@@ -16,10 +16,11 @@ ACCESS_KEY = env_dist.get('ACCESS_KEY', '')
 ACCESS_SECRET = env_dist.get('ACCESS_SECRET', '')
 APP_KEY = env_dist.get('APP_KEY', '')
 SCENE = env_dist.get('SCENE', 'ic_activity')
-NAME = env_dist.get('NAME', '')
+NAME = env_dist.get('NAME', 'faucet')
 CHAIN_ID = env_dist.get('CHAIN_ID', 'fuxi-develop')
 AMOUNT = env_dist.get('AMOUNT', '10iris')
 PASSWORD = env_dist.get('PASSWORD', '1234567890')
+NODE = env_dist.get('NODE', 'tcp://192.168.150.7:46657')
 
 # clt = client.AcsClient('YOUR ACCESSKEY', 'YOUR ACCESS_SECRET', 'cn-hangzhou')
 clt = client.AcsClient(ACCESS_KEY, ACCESS_SECRET, 'cn-hangzhou')
@@ -80,7 +81,8 @@ def verify(token, session_id, sig, ip):
 
 
 def send(address):
-    send_faucet = "iriscli send --to={0} --name={1} --chain-id={2} --amount={3}".format(address, NAME, CHAIN_ID, AMOUNT)
+    send_faucet = "iriscli send --to={0} --name={1} --chain-id={2} --amount={3} --node={4}".format(
+        address, NAME, CHAIN_ID, AMOUNT, NODE)
     print(send_faucet)
 
     p = run([send_faucet], shell=True, stdout=PIPE, input=(PASSWORD + "\n").encode())

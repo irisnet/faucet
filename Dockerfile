@@ -22,4 +22,4 @@ RUN mkdir -p $IRIS_PATH &&\
     apk del $PACKAGES &&\
     rm -fr $GOPATH/src/
 
-CMD ["python3"]
+CMD ["python3","main.py"]
