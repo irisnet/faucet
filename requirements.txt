@@ -1,0 +1,2 @@
+aliyun-python-sdk-core-v3==2.8.2
+Flask==1.0.2
