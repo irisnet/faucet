@@ -4,9 +4,6 @@
     body {
         padding-top: 200px;
     }
-    {##SM_TXT_1 {#}
-    {#    font-size: 20px;#}
-    {#}#}
 </style>
 <head>
     <meta charset="UTF-8">
@@ -17,10 +14,10 @@
     <link href="https://cdn.bootcss.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet">
     <script>
         window.NVC_Opt = {
-            appkey: 'FFFF0N000000000062E3',
-            scene: 'ic_activity',
-            renderTo: '#captcha',
-            trans: {"key1": "code0", "nvcCode": 200},
+            appkey:'FFFF0N000000000063E3',
+            scene:'ic_activity_h5',
+            renderTo:'#captcha',
+            trans: {"key1": "code0", "nvcCode":200},
             elements: [
                 '//img.alicdn.com/tfs/TB17cwllsLJ8KJjy0FnXXcFDpXa-50-74.png',
                 '//img.alicdn.com/tfs/TB17cwllsLJ8KJjy0FnXXcFDpXa-50-74.png'
@@ -31,9 +28,8 @@
             bg_back_pass: '//img.alicdn.com/tfs/TB1KDxCSVXXXXasXFXXXXXXXXXX-100-80.png',
             obj_error: '//img.alicdn.com/tfs/TB1q9yTltfJ8KJjy0FeXXXKEXXa-50-74.png',
             bg_back_fail: '//img.alicdn.com/tfs/TB1w2oOSFXXXXb4XpXXXXXXXXXX-100-80.png',
-            upLang: {
-                "cn": {
-                    _ggk_guide: "请摁住鼠标左键，刮出两面盾牌",
+            upLang:{"cn":{
+                    _ggk_guide: "请在屏幕上滑动，刮出两面盾牌",
                     _ggk_success: "恭喜您成功刮出盾牌<br/>继续下一步操作吧",
                     _ggk_loading: "加载中",
                     _ggk_fail: ['呀，盾牌不见了<br/>请', "javascript:noCaptcha.reset()", '再来一次', '或', "http://survey.taobao.com/survey/QgzQDdDd?token=%TOKEN", '反馈问题'],
@@ -45,16 +41,15 @@
         }
     </script>
 
+
     <script src="//g.alicdn.com/sd/nvc/1.1.112/guide.js"></script>
     <script>
         window.onload = function () {
             var ic = new smartCaptcha({
                 renderTo: '#sc',
-                {#width: 300,#}
-                {#height: 200,#}
-                default_txt: '点击按钮开始智能验证',
-                success_txt: '验证成功',
-                fail_txt: '验证失败，请在此点击按钮刷新',
+                default_txt: 'I\'m not a bot',
+                success_txt: 'verify successfully',
+                fail_txt: 'verify fail，请在此点击按钮刷新',
                 scaning_txt: '智能检测中',
                 success: function (data) {
                     document.getElementById("submit").removeAttribute("disabled");
@@ -75,6 +70,7 @@
                     document.getElementById("err_msg").innerHTML = "* "+ result.err_msg;
                 } else {
                     document.getElementById("err_msg").innerHTML = "apply successfully";
+                    setTimeout(location.reload(), 1000);
                 }
             });
             return false;
@@ -100,7 +96,7 @@
             <div id="sc" style="margin: 0 0 0 0">
             </div>
         </fieldset>
-        <button id="submit" type="submit" class="btn btn-primary" disabled>Send me Irisnet tokens</button>
+        <button id="submit" type="submit" class="btn btn-primary" disabled>Send me IRIS</button>
     </form>
 </div>
 </body>
