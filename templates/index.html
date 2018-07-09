@@ -4,9 +4,6 @@
     body {
         padding-top: 200px;
     }
-    {##SM_TXT_1 {#}
-    {#    font-size: 20px;#}
-    {#}#}
 </style>
 <head>
     <meta charset="UTF-8">
@@ -50,11 +47,9 @@
         window.onload = function () {
             var ic = new smartCaptcha({
                 renderTo: '#sc',
-                {#width: 300,#}
-                {#height: 200,#}
-                default_txt: '点击按钮开始智能验证',
-                success_txt: '验证成功',
-                fail_txt: '验证失败，请在此点击按钮刷新',
+                default_txt: 'I\'m not a bot',
+                success_txt: 'verify successfully',
+                fail_txt: 'verify fail，请在此点击按钮刷新',
                 scaning_txt: '智能检测中',
                 success: function (data) {
                     document.getElementById("submit").removeAttribute("disabled");
@@ -101,7 +96,7 @@
             <div id="sc" style="margin: 0 0 0 0">
             </div>
         </fieldset>
-        <button id="submit" type="submit" class="btn btn-primary" disabled>Send me Irisnet tokens</button>
+        <button id="submit" type="submit" class="btn btn-primary" disabled>Send me IRIS</button>
     </form>
 </div>
 </body>

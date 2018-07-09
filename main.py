@@ -1,6 +1,7 @@
 import json
 import os
 from subprocess import PIPE, run
+from flask_cors import *
 
 from aliyunsdkcore import client
 from aliyunsdkafs.request.v20180112 import AuthenticateSigRequest
@@ -27,6 +28,7 @@ clt = client.AcsClient(ACCESS_KEY, ACCESS_SECRET, 'cn-hangzhou')
 ali_request = AuthenticateSigRequest.AuthenticateSigRequest()
 
 app = Flask(__name__)
+CORS(app, supports_credentials=True)
 
 
 @app.route('/')
@@ -36,11 +38,18 @@ def index():
 
 @app.route('/apply', methods=['POST'])
 def apply():
-    token = request.values.get("token", "")
-    session_id = request.values.get("session_id", "")
-    sig = request.values.get("sig", "")
     ip = request.remote_addr
-    address = request.values.get("address", "")
+    # token = request.values.get("token", "")
+    # session_id = request.values.get("session_id", "")
+    # sig = request.values.get("sig", "")
+    # address = request.values.get("address", "")
+
+    data = request.get_data()
+    json_dict = json.loads(data)
+    token = json_dict.get("token", "")
+    session_id = json_dict.get("session_id", "")
+    sig = json_dict.get("sig", "")
+    address = json_dict.get("address", "")
 
     if address.strip() == "":
         return jsonify({"err_code": "401", "err_msg": "address is empty"})
