@@ -1,5 +1,6 @@
 import json
 import os
+import logging
 from subprocess import PIPE, run
 from flask_cors import *
 
@@ -27,6 +28,14 @@ NODE = env_dist.get('NODE', 'tcp://192.168.150.7:46657')
 clt = client.AcsClient(ACCESS_KEY, ACCESS_SECRET, 'cn-hangzhou')
 ali_request = AuthenticateSigRequest.AuthenticateSigRequest()
 
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+ch = logging.StreamHandler()
+ch.setLevel(logging.INFO)
+formatter = logging.Formatter('[%(asctime)s][%(thread)d][%(filename)s][line: %(lineno)d][%(levelname)s] ## %(message)s')
+ch.setFormatter(formatter)
+logger.addHandler(ch)
+
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
 
@@ -45,12 +54,16 @@ def apply():
     # address = request.values.get("address", "")
 
     data = request.get_data()
-    json_dict = json.loads(data)
+    try:
+        json_dict = json.loads(data)
+    except Exception:
+        return jsonify({"err_code": "400", "err_msg": "bad request"})
     token = json_dict.get("token", "")
     session_id = json_dict.get("session_id", "")
     sig = json_dict.get("sig", "")
     address = json_dict.get("address", "")
 
+    logger.info("apply address: %s", address)
     if address.strip() == "":
         return jsonify({"err_code": "401", "err_msg": "address is empty"})
 
@@ -79,8 +92,6 @@ def verify(token, session_id, sig, ip):
         result = clt.do_action_with_exception(ali_request)  # 返回code 100表示验签通过，900表示验签失败
     except Exception:
         return False
-
-    print(result)
     s = bytes.decode(result)
     j = json.loads(s)
     if j.get('Code', -100) == 100:
@@ -92,10 +103,10 @@ def verify(token, session_id, sig, ip):
 def send(address):
     send_faucet = "iriscli send --to={0} --name={1} --chain-id={2} --amount={3} --node={4}".format(
         address, NAME, CHAIN_ID, AMOUNT, NODE)
-    print(send_faucet)
+    logger.info(send_faucet)
 
     p = run([send_faucet], shell=True, stdout=PIPE, input=(PASSWORD + "\n").encode())
-    print(p.stdout)
+    logger.info(p.stdout)
 
 
 if __name__ == '__main__':
