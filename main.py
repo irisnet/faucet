@@ -37,15 +37,17 @@ ch.setFormatter(formatter)
 logger.addHandler(ch)
 
 app = Flask(__name__)
-CORS(app, supports_credentials=True)
+CORS(app)
 
 
 @app.route('/')
+@cross_origin()
 def index():
     return render_template('index.html')
 
 
 @app.route('/apply', methods=['POST'])
+@cross_origin()
 def apply():
     ip = request.remote_addr
     # token = request.values.get("token", "")
