@@ -70,7 +70,6 @@ def apply():
         return jsonify({"err_code": "401", "err_msg": "address is empty"})
 
     if verify(token, session_id, sig, ip):
-        address = request.values.get("address", "")
         send(address)
         return jsonify({"data": address})
     return jsonify({"err_code": "402", "err_msg": "verify error"})
