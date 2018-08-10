@@ -13,7 +13,7 @@ RUN mkdir -p $IRIS_PATH &&\
     go get github.com/golang/dep/cmd/dep &&\
     cd $IRIS_PATH &&\
     git clone https://github.com/irisnet/irishub.git &&\
-    cd irishub && git checkout -b master origin/master &&\
+    cd irishub && git checkout master &&\
     dep ensure -vendor-only &&\
     make build_linux &&\
     mv build/* /usr/local/bin/ &&\
