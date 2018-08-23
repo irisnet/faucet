@@ -1,7 +1,9 @@
 import json
 import os
 import logging
-from subprocess import PIPE, run
+import urllib.request
+from threading import Timer
+
 from flask_cors import *
 
 from aliyunsdkcore import client
@@ -17,12 +19,14 @@ env_dist = os.environ
 ACCESS_KEY = env_dist.get('ACCESS_KEY', '')
 ACCESS_SECRET = env_dist.get('ACCESS_SECRET', '')
 APP_KEY = env_dist.get('APP_KEY', 'FFFF0N000000000063E3')
-SCENE = env_dist.get('SCENE', 'ic_activity_h5')
 NAME = env_dist.get('NAME', 'faucet')
-CHAIN_ID = env_dist.get('CHAIN_ID', 'fuxi-develop')
-AMOUNT = env_dist.get('AMOUNT', '10iris')
+CHAIN_ID = env_dist.get('CHAIN_ID', 'test-chain-Bf61kJ')
 PASSWORD = env_dist.get('PASSWORD', '1234567890')
-NODE = env_dist.get('NODE', 'tcp://192.168.150.7:46657')
+ACCOUNT = env_dist.get('ACCOUNT', 'faa1x8xj4jdwa3sptwuu6daseeney3jluu39qn8rdm')
+
+REST_URL = 'http://localhost:1317'
+SEQUENCE = 0
+ACCOUNT_NUMBER = 0
 
 # clt = client.AcsClient('YOUR ACCESSKEY', 'YOUR ACCESS_SECRET', 'cn-hangzhou')
 clt = client.AcsClient(ACCESS_KEY, ACCESS_SECRET, 'cn-hangzhou')
@@ -32,7 +36,8 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 ch = logging.StreamHandler()
 ch.setLevel(logging.INFO)
-formatter = logging.Formatter('[%(asctime)s][%(thread)d][%(filename)s][line: %(lineno)d][%(levelname)s] ## %(message)s')
+formatter = logging.Formatter(
+    '[%(asctime)s][%(thread)d][%(filename)s][line: %(lineno)d][%(levelname)s] ## %(message)s')
 ch.setFormatter(formatter)
 logger.addHandler(ch)
 
@@ -58,24 +63,33 @@ def apply():
     data = request.get_data()
     try:
         json_dict = json.loads(data)
-    except Exception:
+    except Exception as e:
+        logger.error(e)
         return jsonify({"err_code": "400", "err_msg": "bad request"})
     token = json_dict.get("token", "")
     session_id = json_dict.get("session_id", "")
     sig = json_dict.get("sig", "")
     address = json_dict.get("address", "")
+    scene = json_dict.get("scene", "")
 
     logger.info("apply address: %s", address)
     if address.strip() == "":
         return jsonify({"err_code": "401", "err_msg": "address is empty"})
 
-    if verify(token, session_id, sig, ip):
-        send(address)
-        return jsonify({"data": address})
+    if verify(token, session_id, sig, ip, scene):
+        tx = send(address)
+        if tx == '-1':
+            return jsonify({"err_code": "403", "err_msg": "invalid address"})
+        if tx == '-2':
+            return jsonify({"err_code": "404", "err_msg": "server exception, please try again later"})
+        if tx != '':
+            return jsonify({"data": tx})
+        else:
+            return jsonify({"err_code": "404", "err_msg": "server exception, please try again later"})
     return jsonify({"err_code": "402", "err_msg": "verify error"})
 
 
-def verify(token, session_id, sig, ip):
+def verify(token, session_id, sig, ip, scene):
     # 必填参数：从前端获取，不可更改
     ali_request.set_SessionId(session_id)
     # 必填参数：从前端获取，不可更改，android和ios只变更这个参数即可，下面参数不变保留xxx
@@ -83,7 +97,7 @@ def verify(token, session_id, sig, ip):
     # 必填参数：从前端获取，不可更改
     ali_request.set_Token(token)
     # 必填参数：从前端获取，不可更改
-    ali_request.set_Scene(SCENE)
+    ali_request.set_Scene(scene)
     # 必填参数：后端填写
     ali_request.set_AppKey(APP_KEY)
     # 必填参数：后端填写
@@ -91,7 +105,8 @@ def verify(token, session_id, sig, ip):
 
     try:
         result = clt.do_action_with_exception(ali_request)  # 返回code 100表示验签通过，900表示验签失败
-    except Exception:
+    except Exception as e:
+        logger.error(e)
         return False
     s = bytes.decode(result)
     j = json.loads(s)
@@ -102,13 +117,60 @@ def verify(token, session_id, sig, ip):
 
 
 def send(address):
-    send_faucet = "iriscli send --to={0} --name={1} --chain-id={2} --amount={3} --node={4}".format(
-        address, NAME, CHAIN_ID, AMOUNT, NODE)
-    logger.info(send_faucet)
+    global SEQUENCE
+    data = {
+        "amount": [{"amount": "10000000000000000000", "denom": "iris"}],
+        "name": NAME,
+        "password": PASSWORD,
+        "chain_id": CHAIN_ID,
+        "sequence": str(SEQUENCE),
+        "account_number": str(ACCOUNT_NUMBER),
+        "gas": "10000",
+        "fee": "4000000000000000iris"
+    }
+    data = json.dumps(data)
+    data = bytes(data, 'utf8')
+    SEQUENCE += 1
+    req = urllib.request.Request(REST_URL + "/accounts/" + address + "/send",
+                                 headers={'Content-Type': 'application/json'}, data=data)
+    try:
+        res = urllib.request.urlopen(req)
+        ret = res.read()
+        data = json.loads(ret)
+        logger.info(data)
+        tx = data.get('hash', '')
+        return tx
+    except urllib.request.HTTPError as e:
+        SEQUENCE -= 1
+        ret = e.file.read()
+        s = ret.decode('utf-8')
+        logger.error(s)
+        if s.find('decoding bech32 failed:') > -1:
+            return '-1'
+        else:
+            return '-2'
 
-    p = run([send_faucet], shell=True, stdout=PIPE, input=(PASSWORD + "\n").encode())
-    logger.info(p.stdout)
+
+def get_sequence():
+    try:
+        res = urllib.request.urlopen(REST_URL + "/accounts/" + ACCOUNT)
+        ret = res.read()
+        data = json.loads(ret)
+        value = data.get('value', '0')
+        global SEQUENCE
+        global ACCOUNT_NUMBER
+        if value == '1':
+            SEQUENCE = 1
+        SEQUENCE = int(value.get('sequence', '0'))
+        ACCOUNT_NUMBER = int(value.get('account_number', '0'))
+        logger.info("update account successfully sequence=%d, account_number=%d", SEQUENCE, ACCOUNT_NUMBER)
+    except Exception as e:
+        logger.error(e)
+        logger.info("fail to update sequence and now sequence=%d, account_number=%d", SEQUENCE, ACCOUNT_NUMBER)
+    t = Timer(60 * 10, get_sequence)
+    t.start()
 
 
 if __name__ == '__main__':
+    get_sequence()
     app.run(host='0.0.0.0', port=4000)

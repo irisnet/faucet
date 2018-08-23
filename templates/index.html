@@ -12,11 +12,16 @@
     <script src="https://cdn.bootcss.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
     <link href="https://cdn.bootcss.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet">
     <script>
+        var UserAgent = navigator.userAgent.toLowerCase();
+        var scene = 'ic_other';
+        if (/android/.test(UserAgent) || /iphone os/.test(UserAgent)) {
+            scene = 'ic_activity_h5';
+        }
         window.NVC_Opt = {
-            appkey:'FFFF0N000000000063E3',
-            scene:'ic_activity_h5',
-            renderTo:'#captcha',
-            trans: {"key1": "code0", "nvcCode":200},
+            appkey: 'FFFF0N000000000063E3',
+            scene: scene,
+            renderTo: '#captcha',
+            trans: {"key1": "code0", "nvcCode": 200},
             elements: [
                 '//img.alicdn.com/tfs/TB17cwllsLJ8KJjy0FnXXcFDpXa-50-74.png',
                 '//img.alicdn.com/tfs/TB17cwllsLJ8KJjy0FnXXcFDpXa-50-74.png'
@@ -27,7 +32,8 @@
             bg_back_pass: '//img.alicdn.com/tfs/TB1KDxCSVXXXXasXFXXXXXXXXXX-100-80.png',
             obj_error: '//img.alicdn.com/tfs/TB1q9yTltfJ8KJjy0FeXXXKEXXa-50-74.png',
             bg_back_fail: '//img.alicdn.com/tfs/TB1w2oOSFXXXXb4XpXXXXXXXXXX-100-80.png',
-            upLang:{"cn":{
+            upLang: {
+                "cn": {
                     _ggk_guide: "请在屏幕上滑动，刮出两面盾牌",
                     _ggk_success: "恭喜您成功刮出盾牌<br/>继续下一步操作吧",
                     _ggk_loading: "加载中",
@@ -82,24 +88,26 @@
                 dataType: "json",
                 success: function (result) {
                     if (result.err_code) {
-                        document.getElementById("err_msg").innerHTML = "* "+ result.err_msg;
+                        document.getElementById("err_msg").innerHTML = "* " + result.err_msg;
                     } else {
                         alert("apply successfully");
                         location.reload();
                     }
                 },
                 error: function (message) {
-                    document.getElementById("err_msg").innerHTML = "* "+ result.err_msg;
+                    document.getElementById("err_msg").innerHTML = "* " + result.err_msg;
                 }
             });
             return false;
         }
+
         function GetJsonData() {
             var json = {
                 "token": document.getElementById("token").value,
                 "session_id": document.getElementById("session_id").value,
                 "sig": document.getElementById("sig").value,
                 "address": document.getElementById("address").value,
+                "scene": scene
             };
             return json;
         }
@@ -107,7 +115,7 @@
 </head>
 
 <body>
-<script src="//g.alicdn.com/sd/smartCaptcha/0.0.1/index.js"></script>
+<script src="//g.alicdn.com/sd/smartCaptcha/0.0.3/index.js"></script>
 <div class="container" style="width: 50%">
     <h2>Irisnet Testnet Faucet</h2>
     <p>Use this faucet to get tokens for the latest Irisnet testnet.
