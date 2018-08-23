@@ -9,7 +9,7 @@ if [ $status -ne 0 ]; then
 fi
 
 # Start the second process
-python3 main.py
+sleep 5s && python3 main.py
 status=$?
 if [ $status -ne 0 ]; then
   echo "Failed to start faucet: $status"
