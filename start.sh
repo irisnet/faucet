@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Start the first process
-iriscli advanced rest-server --node $NODE -D
+iriscli advanced rest-server --node $NODE &
 status=$?
 if [ $status -ne 0 ]; then
   echo "Failed to start iris rest: $status"

@@ -9,8 +9,8 @@ WORKDIR $REPO_PATH
 
 COPY --from=builder /usr/local/bin/iriscli /usr/local/bin/iriscli
 
-RUN apk add --no-cache make libc-dev bash gcc&& pip3 install -r requirements.txt
+RUN apk add --no-cache make libc-dev bash gcc && pip3 install -r requirements.txt && chmod -R 777 start.sh
 
 EXPOSE 4000
 
-CMD ./start.sh
+CMD sh start.sh
