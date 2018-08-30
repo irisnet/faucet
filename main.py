@@ -51,6 +51,17 @@ def index():
     return render_template('index.html')
 
 
+@app.route('/account', methods=['GET'])
+@cross_origin()
+def account():
+    try:
+        res = urllib.request.urlopen(REST_URL + "/accounts/" + ACCOUNT)
+        ret = res.read()
+        return ret
+    except Exception as e:
+        logger.error(e)
+
+
 @app.route('/apply', methods=['POST'])
 @cross_origin()
 def apply():
