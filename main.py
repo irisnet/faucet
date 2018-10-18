@@ -1,6 +1,7 @@
 import json
 import os
 import logging
+import threading
 import urllib.request
 from threading import Timer
 
@@ -88,15 +89,19 @@ def apply():
         return jsonify({"err_code": "401", "err_msg": "address is empty"})
 
     if verify(token, session_id, sig, ip, scene):
-        tx = send(address)
-        if tx == '-1':
-            return jsonify({"err_code": "403", "err_msg": "invalid address"})
-        if tx == '-2':
-            return jsonify({"err_code": "404", "err_msg": "server exception, please try again later"})
-        if tx != '':
-            return jsonify({"data": tx})
-        else:
-            return jsonify({"err_code": "404", "err_msg": "server exception, please try again later"})
+        #tx = send(address)
+        t = threading.Thread(target=send,args=(address,))
+        t.setDaemon(True)  # 设置线程为后台线程
+        t.start()
+        # if tx == '-1':
+        #     return jsonify({"err_code": "403", "err_msg": "invalid address"})
+        # if tx == '-2':
+        #     return jsonify({"err_code": "404", "err_msg": "server exception, please try again later"})
+        # if tx != '':
+        #     return jsonify({"data": tx})
+        # else:
+        #     return jsonify({"err_code": "404", "err_msg": "server exception, please try again later"})
+        return jsonify({})
     return jsonify({"err_code": "402", "err_msg": "verify error"})
 
 
