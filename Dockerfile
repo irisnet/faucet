@@ -1,4 +1,4 @@
-FROM irisnet/irishub as builder
+FROM irisnet/irishub:v0.4.2 as builder
 
 FROM python:3.6-alpine
 
