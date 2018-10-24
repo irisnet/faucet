@@ -21,13 +21,13 @@ ACCESS_KEY = env_dist.get('ACCESS_KEY', '')
 ACCESS_SECRET = env_dist.get('ACCESS_SECRET', '')
 APP_KEY = env_dist.get('APP_KEY', 'FFFF0N000000000063E3')
 NAME = env_dist.get('NAME', 'faucet')
-CHAIN_ID = env_dist.get('CHAIN_ID', 'rainbow-dev')
+CHAIN_ID = env_dist.get('CHAIN_ID', 'test-chain-Bf61kJ')
 PASSWORD = env_dist.get('PASSWORD', '1234567890')
-ACCOUNT = env_dist.get('ACCOUNT', 'faa1n78f78d378873cmy32awlp5llcjqz6jquk895x')
+ACCOUNT = env_dist.get('ACCOUNT', 'faa1x8xj4jdwa3sptwuu6daseeney3jluu39qn8rdm')
 
-REST_URL = 'http://192.168.150.7:1317'
-SEQUENCE = 14
-ACCOUNT_NUMBER = 4
+REST_URL = 'http://localhost:1317'
+SEQUENCE = 0
+ACCOUNT_NUMBER = 0
 
 # clt = client.AcsClient('YOUR ACCESSKEY', 'YOUR ACCESS_SECRET', 'cn-hangzhou')
 clt = client.AcsClient(ACCESS_KEY, ACCESS_SECRET, 'cn-hangzhou')
