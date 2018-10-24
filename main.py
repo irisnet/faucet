@@ -21,13 +21,13 @@ ACCESS_KEY = env_dist.get('ACCESS_KEY', '')
 ACCESS_SECRET = env_dist.get('ACCESS_SECRET', '')
 APP_KEY = env_dist.get('APP_KEY', 'FFFF0N000000000063E3')
 NAME = env_dist.get('NAME', 'faucet')
-CHAIN_ID = env_dist.get('CHAIN_ID', 'test-chain-Bf61kJ')
+CHAIN_ID = env_dist.get('CHAIN_ID', 'rainbow-dev')
 PASSWORD = env_dist.get('PASSWORD', '1234567890')
-ACCOUNT = env_dist.get('ACCOUNT', 'faa1x8xj4jdwa3sptwuu6daseeney3jluu39qn8rdm')
+ACCOUNT = env_dist.get('ACCOUNT', 'faa1n78f78d378873cmy32awlp5llcjqz6jquk895x')
 
-REST_URL = 'http://localhost:1317'
-SEQUENCE = 0
-ACCOUNT_NUMBER = 0
+REST_URL = 'http://192.168.150.7:1317'
+SEQUENCE = 14
+ACCOUNT_NUMBER = 4
 
 # clt = client.AcsClient('YOUR ACCESSKEY', 'YOUR ACCESS_SECRET', 'cn-hangzhou')
 clt = client.AcsClient(ACCESS_KEY, ACCESS_SECRET, 'cn-hangzhou')
@@ -67,10 +67,6 @@ def account():
 @cross_origin()
 def apply():
     ip = request.remote_addr
-    # token = request.values.get("token", "")
-    # session_id = request.values.get("session_id", "")
-    # sig = request.values.get("sig", "")
-    # address = request.values.get("address", "")
 
     data = request.get_data()
     try:
@@ -89,18 +85,9 @@ def apply():
         return jsonify({"err_code": "401", "err_msg": "address is empty"})
 
     if verify(token, session_id, sig, ip, scene):
-        #tx = send(address)
         t = threading.Thread(target=send,args=(address,))
         t.setDaemon(True)  # 设置线程为后台线程
         t.start()
-        # if tx == '-1':
-        #     return jsonify({"err_code": "403", "err_msg": "invalid address"})
-        # if tx == '-2':
-        #     return jsonify({"err_code": "404", "err_msg": "server exception, please try again later"})
-        # if tx != '':
-        #     return jsonify({"data": tx})
-        # else:
-        #     return jsonify({"err_code": "404", "err_msg": "server exception, please try again later"})
         return jsonify({})
     return jsonify({"err_code": "402", "err_msg": "verify error"})
 
@@ -135,19 +122,22 @@ def verify(token, session_id, sig, ip, scene):
 def send(address):
     global SEQUENCE
     data = {
-        "amount": [{"amount": "10000000000000000000", "denom": "iris"}],
-        "name": NAME,
-        "password": PASSWORD,
-        "chain_id": CHAIN_ID,
-        "sequence": str(SEQUENCE),
-        "account_number": str(ACCOUNT_NUMBER),
-        "gas": "10000",
-        "fee": "4000000000000000iris"
+        "amount": "10000000000000000000iris-atto",
+        "sender": NAME,
+        "base_tx": {
+            "name": NAME,
+            "password": PASSWORD,
+            "chain_id": CHAIN_ID,
+            "sequence": str(SEQUENCE),
+            "account_number": str(ACCOUNT_NUMBER),
+            "gas": "10000",
+            "fee": "4000000000000000iris-atto"
+        }
     }
     data = json.dumps(data)
     data = bytes(data, 'utf8')
     SEQUENCE += 1
-    req = urllib.request.Request(REST_URL + "/accounts/" + address + "/send",
+    req = urllib.request.Request(REST_URL + "/bank/" + address + "/send",
                                  headers={'Content-Type': 'application/json'}, data=data)
     try:
         res = urllib.request.urlopen(req)
@@ -169,7 +159,7 @@ def send(address):
 
 def get_sequence():
     try:
-        res = urllib.request.urlopen(REST_URL + "/accounts/" + ACCOUNT)
+        res = urllib.request.urlopen(REST_URL + "/bank/accounts/" + ACCOUNT)
         ret = res.read()
         data = json.loads(ret)
         value = data.get('value', '0')
