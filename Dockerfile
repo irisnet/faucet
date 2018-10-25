@@ -7,7 +7,7 @@ ENV REPO_PATH   /faucet
 COPY . $REPO_PATH
 WORKDIR $REPO_PATH
 
-COPY --from=builder /usr/local/bin/iriscli /usr/local/bin/iriscli
+COPY --from=builder /usr/local/bin/irislcd /usr/local/bin/irislcd
 
 RUN apk add --no-cache make libc-dev bash gcc && pip3 install -r requirements.txt
 
