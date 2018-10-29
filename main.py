@@ -162,13 +162,10 @@ def get_sequence():
         res = urllib.request.urlopen(REST_URL + "/bank/accounts/" + ACCOUNT)
         ret = res.read()
         data = json.loads(ret)
-        value = data.get('value', '0')
         global SEQUENCE
         global ACCOUNT_NUMBER
-        if value == '1':
-            SEQUENCE = 1
-        SEQUENCE = int(value.get('sequence', '0'))
-        ACCOUNT_NUMBER = int(value.get('account_number', '0'))
+        SEQUENCE = int(data.get('sequence', '0'))
+        ACCOUNT_NUMBER = int(data.get('account_number', '0'))
         logger.info("update account successfully sequence=%d, account_number=%d", SEQUENCE, ACCOUNT_NUMBER)
     except Exception as e:
         logger.error(e)
