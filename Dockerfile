@@ -1,4 +1,4 @@
-FROM irisnet/irishub:v0.4.2 as builder
+FROM irisnet/irishub:v0.6.0 as builder
 
 FROM python:3.6-alpine
 
@@ -7,6 +7,7 @@ ENV REPO_PATH   /faucet
 COPY . $REPO_PATH
 WORKDIR $REPO_PATH
 
+COPY --from=builder /usr/local/bin/irislcd /usr/local/bin/irislcd
 COPY --from=builder /usr/local/bin/iriscli /usr/local/bin/iriscli
 
 RUN apk add --no-cache make libc-dev bash gcc && pip3 install -r requirements.txt
