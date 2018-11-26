@@ -159,7 +159,7 @@ def send(address):
 
 def get_sequence():
     try:
-        res = urllib.request.urlopen(REST_URL + "/bank/accounts/" + ACCOUNT)
+        res = urllib.request.urlopen(REST_URL + "/auth/accounts/" + ACCOUNT)
         ret = res.read()
         data = json.loads(ret)
         global SEQUENCE
