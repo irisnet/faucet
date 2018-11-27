@@ -56,7 +56,7 @@ def index():
 @cross_origin()
 def account():
     try:
-        res = urllib.request.urlopen(REST_URL + "/bank/accounts/" + ACCOUNT)
+        res = urllib.request.urlopen(REST_URL + "/auth/accounts/" + ACCOUNT)
         ret = res.read()
         return ret
     except Exception as e:
