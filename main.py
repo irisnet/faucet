@@ -56,7 +56,7 @@ def index():
 @cross_origin()
 def account():
     try:
-        res = urllib.request.urlopen(REST_URL + "/bank/accounts/" + ACCOUNT)
+        res = urllib.request.urlopen(REST_URL + "/auth/accounts/" + ACCOUNT)
         ret = res.read()
         return ret
     except Exception as e:
@@ -123,7 +123,7 @@ def send(address):
     global SEQUENCE
     data = {
         "amount": "10000000000000000000iris-atto",
-        "sender": NAME,
+        "sender": ACCOUNT,
         "base_tx": {
             "name": NAME,
             "password": PASSWORD,
@@ -137,7 +137,7 @@ def send(address):
     data = json.dumps(data)
     data = bytes(data, 'utf8')
     SEQUENCE += 1
-    req = urllib.request.Request(REST_URL + "/bank/" + address + "/send",
+    req = urllib.request.Request(REST_URL + "/bank/accounts/" + address + "/transfers",
                                  headers={'Content-Type': 'application/json'}, data=data)
     try:
         res = urllib.request.urlopen(req)
@@ -159,7 +159,7 @@ def send(address):
 
 def get_sequence():
     try:
-        res = urllib.request.urlopen(REST_URL + "/bank/accounts/" + ACCOUNT)
+        res = urllib.request.urlopen(REST_URL + "/auth/accounts/" + ACCOUNT)
         ret = res.read()
         data = json.loads(ret)
         global SEQUENCE
