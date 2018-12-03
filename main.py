@@ -170,7 +170,7 @@ def get_sequence():
     except Exception as e:
         logger.error(e)
         logger.info("fail to update sequence and now sequence=%d, account_number=%d", SEQUENCE, ACCOUNT_NUMBER)
-    t = Timer(60 * 10, get_sequence)
+    t = Timer(60 * 2, get_sequence)
     t.start()
 
 
