@@ -8,6 +8,8 @@ if [ $status -ne 0 ]; then
   exit $status
 fi
 
+
+apk add --no-cache curl
 #init faucet account
 curl -X POST "http://localhost:1317/keys" -H "accept: application/json" -H "Content-Type: application/json" -d "{ \"name\": \"$NAME\", \"password\": \"$PASSWORD\", \"seed\": \"$SEED\"}"
 
