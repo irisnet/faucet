@@ -5,6 +5,8 @@ import threading
 import urllib.request
 from threading import Timer
 
+import datetime
+import time
 from flask_cors import *
 from flask import Flask, render_template, jsonify, request
 
@@ -35,6 +37,18 @@ logger.addHandler(ch)
 
 app = Flask(__name__)
 CORS(app)
+
+
+def clear_db(h=0, m=0):
+    now = datetime.datetime.now()
+    hour = now.hour
+    minute = now.minute
+    logger.info("current hour: %d", hour)
+    logger.info("current minute: %d", minute)
+    if now.hour == hour and now.minute == minute:
+        db.clear()
+    t = Timer(10, clear_db)
+    t.start()
 
 
 @app.route('/')
@@ -145,4 +159,5 @@ def get_sequence():
 
 if __name__ == '__main__':
     get_sequence()
+    clear_db()
     app.run(host='0.0.0.0', port=4000)
