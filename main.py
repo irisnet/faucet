@@ -6,32 +6,23 @@ import urllib.request
 from threading import Timer
 
 from flask_cors import *
-
-from aliyunsdkcore import client
-from aliyunsdkafs.request.v20180112 import AuthenticateSigRequest
-from aliyunsdkcore.profile import region_provider
 from flask import Flask, render_template, jsonify, request
 
-region_provider.modify_point('afs', 'cn-hangzhou', 'afs.aliyuncs.com')
 
 env_dist = os.environ
+db = {}
 
 # ACCESS_KEY、ACCESS_SECRET请替换成您的阿里云accesskey id和secret
-ACCESS_KEY = env_dist.get('ACCESS_KEY', '')
-ACCESS_SECRET = env_dist.get('ACCESS_SECRET', '')
-APP_KEY = env_dist.get('APP_KEY', 'FFFF0N000000000063E3')
 NAME = env_dist.get('NAME', 'faucet')
-CHAIN_ID = env_dist.get('CHAIN_ID', 'test-chain-Bf61kJ')
+CHAIN_ID = env_dist.get('CHAIN_ID', 'rainbow-dev')
 PASSWORD = env_dist.get('PASSWORD', '1234567890')
-ACCOUNT = env_dist.get('ACCOUNT', 'faa1x8xj4jdwa3sptwuu6daseeney3jluu39qn8rdm')
+ACCOUNT = env_dist.get('ACCOUNT', 'faa1ljemm0yznz58qxxs8xyak7fashcfxf5lssn6jm')
+MAX_COUNT = env_dist.get('MAX_COUNT', 10)
 
-REST_URL = 'http://localhost:1317'
+REST_URL = 'http://192.168.150.7:30317'
 SEQUENCE = 0
 ACCOUNT_NUMBER = 0
 
-# clt = client.AcsClient('YOUR ACCESSKEY', 'YOUR ACCESS_SECRET', 'cn-hangzhou')
-clt = client.AcsClient(ACCESS_KEY, ACCESS_SECRET, 'cn-hangzhou')
-ali_request = AuthenticateSigRequest.AuthenticateSigRequest()
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -74,49 +65,27 @@ def apply():
     except Exception as e:
         logger.error(e)
         return jsonify({"err_code": "400", "err_msg": "bad request"})
-    token = json_dict.get("token", "")
-    session_id = json_dict.get("session_id", "")
-    sig = json_dict.get("sig", "")
     address = json_dict.get("address", "")
-    scene = json_dict.get("scene", "")
 
     logger.info("apply address: %s", address)
     if address.strip() == "":
         return jsonify({"err_code": "401", "err_msg": "address is empty"})
 
-    if verify(token, session_id, sig, ip, scene):
+    if verify(ip):
         t = threading.Thread(target=send,args=(address,))
         t.setDaemon(True)  # 设置线程为后台线程
         t.start()
         return jsonify({})
+    logger.error("Exceed the upper limit")
     return jsonify({"err_code": "402", "err_msg": "verify error"})
 
 
-def verify(token, session_id, sig, ip, scene):
-    # 必填参数：从前端获取，不可更改
-    ali_request.set_SessionId(session_id)
-    # 必填参数：从前端获取，不可更改，android和ios只变更这个参数即可，下面参数不变保留xxx
-    ali_request.set_Sig(sig)
-    # 必填参数：从前端获取，不可更改
-    ali_request.set_Token(token)
-    # 必填参数：从前端获取，不可更改
-    ali_request.set_Scene(scene)
-    # 必填参数：后端填写
-    ali_request.set_AppKey(APP_KEY)
-    # 必填参数：后端填写
-    ali_request.set_RemoteIp(ip)
-
-    try:
-        result = clt.do_action_with_exception(ali_request)  # 返回code 100表示验签通过，900表示验签失败
-    except Exception as e:
-        logger.error(e)
+def verify(req_ip):
+    count = db.get(req_ip, 0)
+    if count >= MAX_COUNT:
         return False
-    s = bytes.decode(result)
-    j = json.loads(s)
-    if j.get('Code', -100) == 100:
-        return True
-
-    return False
+    db[req_ip] = count + 1
+    return True
 
 
 def send(address):
