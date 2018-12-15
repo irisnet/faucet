@@ -21,7 +21,7 @@ PASSWORD = env_dist.get('PASSWORD', '1234567890')
 ACCOUNT = env_dist.get('ACCOUNT', 'faa1ljemm0yznz58qxxs8xyak7fashcfxf5lssn6jm')
 MAX_COUNT = env_dist.get('MAX_COUNT', 10)
 
-REST_URL = 'http://192.168.150.7:30317'
+REST_URL = 'http://localhost:1317'
 SEQUENCE = 0
 ACCOUNT_NUMBER = 0
 
