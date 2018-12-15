@@ -45,7 +45,7 @@ def clear_db(h=0, m=0):
     minute = now.minute
     logger.info("current hour: %d", hour)
     logger.info("current minute: %d", minute)
-    if now.hour == hour and now.minute == minute:
+    if h == hour and m == minute:
         db.clear()
     t = Timer(10, clear_db)
     t.start()
