@@ -91,7 +91,7 @@ def apply():
         t.start()
         return jsonify({})
     logger.error("Exceed the upper limit")
-    return jsonify({"err_code": "402", "err_msg": "verify error"})
+    return jsonify({"err_code": "402", "err_msg": "Exceed the upper limit"})
 
 
 def verify(req_ip):
