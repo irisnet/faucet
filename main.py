@@ -96,7 +96,7 @@ def apply():
 
 def verify(req_ip):
     count = db.get(req_ip, 0)
-    if count >= MAX_COUNT:
+    if count >= int(MAX_COUNT):
         return False
     db[req_ip] = count + 1
     return True
