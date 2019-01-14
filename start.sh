@@ -1,21 +1,17 @@
 #!/bin/bash
 
+# init faucet account
+HOME=~/.irislcd
+rm -rf $HOME
+echo -e "$PASSWORD\n$SEED" | iriscli keys add $NAME --recover --home=$HOME
+
 # Start the first process
-irislcd start --trust-node=true --node $NODE &
+irislcd start --trust-node=true --node $NODE --home=$HOME &
 status=$?
 if [ $status -ne 0 ]; then
   echo "Failed to start iris rest: $status"
   exit $status
 fi
-
-
-apk add --no-cache curl
-#init faucet account
-curl -X POST "http://localhost:1317/keys" -H "accept: application/json" -H "Content-Type: application/json" -d "{ \"name\": \"$NAME\", \"password\": \"$PASSWORD\", \"seed\": \"$SEED\"}"
-if [ $? -ne 0 ]; then
-  echo "init faucet account failed"
-fi
-
 
 # Start the second process
 sleep 5s && python3 main.py
