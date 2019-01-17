@@ -20,6 +20,8 @@ CHAIN_ID = env_dist.get('CHAIN_ID', 'rainbow-dev')
 PASSWORD = env_dist.get('PASSWORD', '1234567890')
 ACCOUNT = env_dist.get('ACCOUNT', 'faa1ljemm0yznz58qxxs8xyak7fashcfxf5lssn6jm')
 MAX_COUNT = env_dist.get('MAX_COUNT', 10)
+FEE = env_dist.get('FEE', '5000000000000000000iris-atto')
+AMOUNT = env_dist.get('AMOUNT', '10000000000000000000iris-atto')
 
 REST_URL = 'http://localhost:1317'
 SEQUENCE = 0
@@ -105,7 +107,7 @@ def verify(req_ip):
 def send(address):
     global SEQUENCE
     data = {
-        "amount": "10000000000000000000iris-atto",
+        "amount": AMOUNT,
         "sender": ACCOUNT,
         "base_tx": {
             "name": NAME,
@@ -114,7 +116,7 @@ def send(address):
             "sequence": str(SEQUENCE),
             "account_number": str(ACCOUNT_NUMBER),
             "gas": "10000",
-            "fee": "4000000000000000iris-atto"
+            "fee": FEE
         }
     }
     data = json.dumps(data)
