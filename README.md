@@ -15,6 +15,8 @@ Faucet service for Irishub Testnet
 3. ACCOUNT，faucet account address
 4. PASSWORD，faucet账户密码
 5. NODE，测试网络节点
+6. AMOUNT，转币数量
+7. FEE，网络费用
 
 # RUN
 ```
