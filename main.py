@@ -5,21 +5,17 @@ import threading
 import urllib.request
 from threading import Timer
 
-import datetime
-import time
 from flask_cors import *
 from flask import Flask, render_template, jsonify, request
 
 
 env_dist = os.environ
-db = {}
 
 # ACCESS_KEY、ACCESS_SECRET请替换成您的阿里云accesskey id和secret
 NAME = env_dist.get('NAME', 'faucet')
 CHAIN_ID = env_dist.get('CHAIN_ID', 'rainbow-dev')
 PASSWORD = env_dist.get('PASSWORD', '1234567890')
 ACCOUNT = env_dist.get('ACCOUNT', 'faa1ljemm0yznz58qxxs8xyak7fashcfxf5lssn6jm')
-MAX_COUNT = env_dist.get('MAX_COUNT', 10)
 FEE = env_dist.get('FEE', '5000000000000000000iris-atto')
 AMOUNT = env_dist.get('AMOUNT', '10000000000000000000iris-atto')
 
@@ -39,18 +35,6 @@ logger.addHandler(ch)
 
 app = Flask(__name__)
 CORS(app)
-
-
-def clear_db(h=0, m=0):
-    now = datetime.datetime.now()
-    hour = now.hour
-    minute = now.minute
-    logger.info("current hour: %d", hour)
-    logger.info("current minute: %d", minute)
-    if h == hour and m == minute:
-        db.clear()
-    t = Timer(10, clear_db)
-    t.start()
 
 
 @app.route('/')
@@ -73,7 +57,6 @@ def account():
 @app.route('/apply', methods=['POST'])
 @cross_origin()
 def apply():
-    ip = request.remote_addr
 
     data = request.get_data()
     try:
@@ -87,21 +70,10 @@ def apply():
     if address.strip() == "":
         return jsonify({"err_code": "401", "err_msg": "address is empty"})
 
-    if verify(ip):
-        t = threading.Thread(target=send,args=(address,))
-        t.setDaemon(True)  # 设置线程为后台线程
-        t.start()
-        return jsonify({})
-    logger.error("Exceed the upper limit")
-    return jsonify({"err_code": "402", "err_msg": "Exceed the upper limit"})
-
-
-def verify(req_ip):
-    count = db.get(req_ip, 0)
-    if count >= int(MAX_COUNT):
-        return False
-    db[req_ip] = count + 1
-    return True
+    t = threading.Thread(target=send,args=(address,))
+    t.setDaemon(True)  # 设置线程为后台线程
+    t.start()
+    return jsonify({})
 
 
 def send(address):
@@ -161,5 +133,4 @@ def get_sequence():
 
 if __name__ == '__main__':
     get_sequence()
-    clear_db()
     app.run(host='0.0.0.0', port=4000)
